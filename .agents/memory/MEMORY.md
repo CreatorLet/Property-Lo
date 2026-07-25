@@ -1,0 +1,6 @@
+- [Favorites response shape](favorites-response-shape.md) — the favorites endpoint returns a plain listing array, not a `{ listings }` envelope.
+- [Local database provisioning](local-database-provisioning.md) — API auth and listings require the Drizzle schema pushed to the development Postgres database.
+- [Dashboard navigation rendering](dashboard-navigation-rendering.md) — keep the bottom navigation explicitly rendered by DashboardLayout after page content.
+- [Authenticated preview verification](authenticated-preview-verification.md) — dashboard screenshots require an authenticated browser session to show dashboard-only UI.
+- [Shared layout import checks](shared-layout-import-checks.md) — verify Navbar and Footer icon references after cleaning shared layout imports.
+- [Route scroll restoration](route-scroll-restoration.md) — reset the document position on internal route changes so new pages open at the top.

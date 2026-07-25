@@ -1,0 +1,38 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "oEP0X3u12ttcyvv_utfGb"
+uri = "file://est.zip"
+type = "unspecified"
+title = "PropertyLo source archive (est.zip)"
+
+[[outputs]]
+id = "3CUcE2k-1Rjf--mctUGUT"
+uri = "file://compl.zip"
+type = "unspecified"
+title = "Complete PropertyLo project archive (compl.zip)"
+
+[[outputs]]
+id = "Ox51GCCwk-6xa5OZAoM8c"
+uri = "file://comest.zip"
+type = "unspecified"
+title = "Updated PropertyLo project archive (comest.zip)"
+
+[[outputs]]
+id = "XCeiwm_oSYs9F41P8_ksd"
+uri = "file://property2me.zip"
+type = "unspecified"
+title = "PropertyLo dashboard redesign archive (property2me.zip)"
+
+[[outputs]]
+id = "NyucP-lTFhHl3QWcJS5-W"
+uri = "file://finished.zip"
+type = "unspecified"
+title = "Finished PropertyLo project archive (finished.zip)"
+
+[[outputs]]
+id = "kXv_1DQkxPhpHdLO1jOn3"
+uri = "file://sampled.zip"
+type = "unspecified"
+title = "Sampled PropertyLo project archive (sampled.zip)"

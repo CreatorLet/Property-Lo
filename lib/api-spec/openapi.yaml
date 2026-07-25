@@ -1,0 +1,1587 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Property Lo API — Nigerian real estate listing platform
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: auth
+  - name: listings
+  - name: favorites
+  - name: chats
+  - name: support
+  - name: ads
+  - name: contact
+  - name: admin
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ── Auth ──────────────────────────────────────────────────────────────────
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupInput"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpInput"
+      responses:
+        "200":
+          description: Account created and signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/resend-otp:
+    post:
+      operationId: resendOtp
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailInput"
+      responses:
+        "200":
+          description: OTP resent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/signin:
+    post:
+      operationId: signin
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SigninInput"
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/admin/signin:
+    post:
+      operationId: adminSignin
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SigninInput"
+      responses:
+        "200":
+          description: Admin signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailInput"
+      responses:
+        "200":
+          description: Reset code sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/reset-password:
+    post:
+      operationId: resetPassword
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordInput"
+      responses:
+        "200":
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /auth/profile:
+    patch:
+      operationId: updateProfile
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /auth/password:
+    patch:
+      operationId: updatePassword
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordUpdate"
+      responses:
+        "200":
+          description: Password changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/avatar:
+    patch:
+      operationId: updateAvatar
+      tags: [auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AvatarUpdate"
+      responses:
+        "200":
+          description: Avatar updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # ── Listings ──────────────────────────────────────────────────────────────
+  /listings:
+    get:
+      operationId: getListings
+      tags: [listings]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: purpose
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsResponse"
+    post:
+      operationId: createListing
+      tags: [listings]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+      responses:
+        "201":
+          description: Created listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /listings/stats:
+    get:
+      operationId: getListingStats
+      tags: [listings]
+      responses:
+        "200":
+          description: Listing statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingStats"
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Single listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+    patch:
+      operationId: updateListing
+      tags: [listings]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingUpdate"
+      responses:
+        "200":
+          description: Updated listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+    delete:
+      operationId: deleteListing
+      tags: [listings]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ── Favorites ─────────────────────────────────────────────────────────────
+  /favorites:
+    get:
+      operationId: getFavorites
+      tags: [favorites]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Favorite listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+    post:
+      operationId: addFavorite
+      tags: [favorites]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteInput"
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /favorites/{listingId}:
+    delete:
+      operationId: removeFavorite
+      tags: [favorites]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: listingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ── Chats ─────────────────────────────────────────────────────────────────
+  /chats:
+    get:
+      operationId: getChats
+      tags: [chats]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Chat"
+    post:
+      operationId: createChat
+      tags: [chats]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChatInput"
+      responses:
+        "201":
+          description: Chat ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatIdResponse"
+
+  /chats/unread-count:
+    get:
+      operationId: getChatUnreadCount
+      tags: [chats]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnreadCountResponse"
+
+  /chats/{id}/messages:
+    get:
+      operationId: getChatMessages
+      tags: [chats]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendChatMessage
+      tags: [chats]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
+  # ── Support ───────────────────────────────────────────────────────────────
+  /support/chat:
+    get:
+      operationId: getSupportChat
+      tags: [support]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Support chat messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportChatResponse"
+
+  /support/chat/messages:
+    post:
+      operationId: sendSupportMessage
+      tags: [support]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportMessage"
+
+  /support/unread-count:
+    get:
+      operationId: getSupportUnreadCount
+      tags: [support]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnreadCountResponse"
+
+  # ── Ads ───────────────────────────────────────────────────────────────────
+  /ads:
+    get:
+      operationId: getAds
+      tags: [ads]
+      responses:
+        "200":
+          description: Active ads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ad"
+
+  # ── Contact ───────────────────────────────────────────────────────────────
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "200":
+          description: Message received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ── Admin ─────────────────────────────────────────────────────────────────
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/analytics:
+    get:
+      operationId: getAdminAnalytics
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAnalytics"
+
+  /admin/listings:
+    get:
+      operationId: getAdminListings
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /admin/users:
+    get:
+      operationId: getAdminUsers
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /admin/users/{id}/status:
+    patch:
+      operationId: updateUserStatus
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserStatusUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /admin/users/{id}:
+    delete:
+      operationId: deleteUser
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /admin/chats:
+    get:
+      operationId: getAdminChats
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: label
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminChat"
+
+  /admin/chats/{id}/messages:
+    get:
+      operationId: getAdminChatMessages
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Chat messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      operationId: sendAdminChatMessage
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatMessage"
+
+  /admin/chats/{id}/label:
+    patch:
+      operationId: updateChatLabel
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabelUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /admin/support/chats:
+    get:
+      operationId: getAdminSupportChats
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Support chats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminSupportChat"
+
+  /admin/support/chats/{chatId}/messages:
+    get:
+      operationId: getAdminSupportMessages
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Support messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SupportMessage"
+    post:
+      operationId: sendAdminSupportMessage
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SupportMessage"
+
+  /admin/ads:
+    get:
+      operationId: getAdminAds
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: All ads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ad"
+    post:
+      operationId: createAd
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdInput"
+      responses:
+        "201":
+          description: Created ad
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ad"
+
+  /admin/ads/{id}:
+    patch:
+      operationId: updateAd
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdUpdate"
+      responses:
+        "200":
+          description: Updated ad
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ad"
+    delete:
+      operationId: deleteAd
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /admin/contact-messages:
+    get:
+      operationId: getContactMessages
+      tags: [admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contact messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactMessage"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    MessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    UnreadCountResponse:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+
+    ChatIdResponse:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+
+    # ── Auth schemas ──────────────────────────────────────────────────────────
+    User:
+      type: object
+      required: [id, email, full_name, role, status, created_at]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        full_name:
+          type: string
+        phone:
+          type: ["string", "null"]
+        role:
+          type: string
+        status:
+          type: string
+        avatar_base64:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    SignupInput:
+      type: object
+      required: [email, password, full_name]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        full_name:
+          type: string
+        phone:
+          type: string
+
+    VerifyOtpInput:
+      type: object
+      required: [email, otp]
+      properties:
+        email:
+          type: string
+        otp:
+          type: string
+
+    SigninInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    EmailInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+
+    ResetPasswordInput:
+      type: object
+      required: [email, otp, new_password]
+      properties:
+        email:
+          type: string
+        otp:
+          type: string
+        new_password:
+          type: string
+
+    ProfileUpdate:
+      type: object
+      required: [full_name]
+      properties:
+        full_name:
+          type: string
+        phone:
+          type: string
+
+    PasswordUpdate:
+      type: object
+      required: [current_password, new_password]
+      properties:
+        current_password:
+          type: string
+        new_password:
+          type: string
+
+    AvatarUpdate:
+      type: object
+      required: [avatar_base64]
+      properties:
+        avatar_base64:
+          type: string
+
+    # ── Listing schemas ───────────────────────────────────────────────────────
+    Listing:
+      type: object
+      required: [id, title, description, type, purpose, price, location, state, images, status, created_at]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        purpose:
+          type: string
+        price:
+          type: number
+        location:
+          type: string
+        state:
+          type: string
+        size:
+          type: ["string", "null"]
+        bedrooms:
+          type: ["integer", "null"]
+        bathrooms:
+          type: ["integer", "null"]
+        images:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        contact_email:
+          type: ["string", "null"]
+        contact_phone:
+          type: ["string", "null"]
+        user_id:
+          type: ["string", "null"]
+        created_at:
+          type: string
+
+    ListingsResponse:
+      type: object
+      required: [listings]
+      properties:
+        listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+
+    ListingStats:
+      type: object
+      required: [active, houses, apartments, lands, locations]
+      properties:
+        active:
+          type: integer
+        houses:
+          type: integer
+        apartments:
+          type: integer
+        lands:
+          type: integer
+        locations:
+          type: array
+          items:
+            type: string
+
+    ListingInput:
+      type: object
+      required: [title, description, type, purpose, price, location, state]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        purpose:
+          type: string
+        price:
+          type: number
+        location:
+          type: string
+        state:
+          type: string
+        size:
+          type: string
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        images:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        contact_email:
+          type: string
+        contact_phone:
+          type: string
+
+    ListingUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        purpose:
+          type: string
+        price:
+          type: number
+        location:
+          type: string
+        state:
+          type: string
+        size:
+          type: string
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        images:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        contact_email:
+          type: string
+        contact_phone:
+          type: string
+
+    # ── Favorites ─────────────────────────────────────────────────────────────
+    FavoriteInput:
+      type: object
+      required: [listing_id]
+      properties:
+        listing_id:
+          type: string
+
+    # ── Chats ─────────────────────────────────────────────────────────────────
+    Chat:
+      type: object
+      required: [id, listing_id, listing_title, label, user_unread, admin_unread, updated_at, created_at]
+      properties:
+        id:
+          type: string
+        listing_id:
+          type: string
+        listing_title:
+          type: string
+        label:
+          type: string
+        last_message:
+          type: ["string", "null"]
+        user_unread:
+          type: integer
+        admin_unread:
+          type: integer
+        updated_at:
+          type: string
+        created_at:
+          type: string
+
+    ChatMessage:
+      type: object
+      required: [id, content, is_admin, created_at]
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        is_admin:
+          type: boolean
+        created_at:
+          type: string
+
+    CreateChatInput:
+      type: object
+      required: [listing_id]
+      properties:
+        listing_id:
+          type: string
+
+    MessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    # ── Support ───────────────────────────────────────────────────────────────
+    SupportMessage:
+      type: object
+      required: [id, content, is_from_user, created_at]
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        is_from_user:
+          type: boolean
+        created_at:
+          type: string
+
+    SupportChatResponse:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportMessage"
+
+    # ── Ads ───────────────────────────────────────────────────────────────────
+    Ad:
+      type: object
+      required: [id, title, image_url, is_active, slide_order]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        image_url:
+          type: string
+        redirect_url:
+          type: ["string", "null"]
+        is_active:
+          type: boolean
+        slide_order:
+          type: integer
+
+    AdInput:
+      type: object
+      required: [title, image_base64]
+      properties:
+        title:
+          type: string
+        image_base64:
+          type: string
+        redirect_url:
+          type: string
+        slide_order:
+          type: integer
+        is_active:
+          type: boolean
+
+    AdUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        image_base64:
+          type: string
+        redirect_url:
+          type: string
+        slide_order:
+          type: integer
+        is_active:
+          type: boolean
+
+    # ── Contact ───────────────────────────────────────────────────────────────
+    ContactInput:
+      type: object
+      required: [first_name, last_name, email, message]
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+
+    ContactMessage:
+      type: object
+      required: [id, first_name, last_name, email, message, created_at]
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        subject:
+          type: ["string", "null"]
+        message:
+          type: string
+        created_at:
+          type: string
+
+    # ── Admin ─────────────────────────────────────────────────────────────────
+    AdminStats:
+      type: object
+      required: [total_users, total_listings, total_chats, total_deals, new_users_this_month, new_listings_this_month, recent_users, recent_listings]
+      properties:
+        total_users:
+          type: integer
+        total_listings:
+          type: integer
+        total_chats:
+          type: integer
+        total_deals:
+          type: integer
+        new_users_this_month:
+          type: integer
+        new_listings_this_month:
+          type: integer
+        recent_users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        recent_listings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+
+    AdminAnalytics:
+      type: object
+      required: [chat_label_breakdown, locations_with_most_listings, most_chatted_houses_sale, most_chatted_houses_rent, most_chatted_lands]
+      properties:
+        chat_label_breakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              count:
+                type: integer
+        locations_with_most_listings:
+          type: array
+          items:
+            type: object
+            properties:
+              location:
+                type: string
+              count:
+                type: integer
+        most_chatted_houses_sale:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              chat_count:
+                type: integer
+        most_chatted_houses_rent:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              chat_count:
+                type: integer
+        most_chatted_lands:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              chat_count:
+                type: integer
+
+    AdminChat:
+      type: object
+      required: [id, listing_id, listing_title, label, user_unread, admin_unread, updated_at]
+      properties:
+        id:
+          type: string
+        listing_id:
+          type: string
+        listing_title:
+          type: string
+        label:
+          type: string
+        last_message:
+          type: ["string", "null"]
+        user_unread:
+          type: integer
+        admin_unread:
+          type: integer
+        updated_at:
+          type: string
+        user_name:
+          type: ["string", "null"]
+
+    AdminSupportChat:
+      type: object
+      required: [id, user_unread, admin_unread, updated_at]
+      properties:
+        id:
+          type: string
+        user_name:
+          type: ["string", "null"]
+        last_message:
+          type: ["string", "null"]
+        user_unread:
+          type: integer
+        admin_unread:
+          type: integer
+        updated_at:
+          type: string
+
+    UserStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    LabelUpdate:
+      type: object
+      required: [label]
+      properties:
+        label:
+          type: string

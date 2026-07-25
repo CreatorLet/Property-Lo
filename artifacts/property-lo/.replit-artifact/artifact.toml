@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Property Lo"
+version = "1.0.0"
+id = "artifacts/property-lo"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19123
+
+[services.development]
+run = "pnpm --filter @workspace/property-lo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/property-lo", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/property-lo/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19123"
+BASE_PATH = "/"
