@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-bullseye AS build
+FROM node:20-bullseye AS build
 WORKDIR /app
 
 # Install pnpm
@@ -23,7 +23,7 @@ WORKDIR /app/artifacts/api-server
 RUN pnpm run build
 
 # Production image
-FROM node:18-bullseye AS prod
+FROM node:20-bullseye AS prod
 WORKDIR /app
 ENV NODE_ENV=production
 
