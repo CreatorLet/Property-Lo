@@ -105,11 +105,13 @@ const staticPath = path.join(process.cwd(), "dist", "public");
 if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
 
-  // SPA fallback for non-API routes
-  // Use `/*` to be compatible with path-to-regexp v8 (Express 5)
-  app.get("/*", (req, res, next) => {
+  // SPA fallback for non-API GET requests — implemented as a middleware to avoid path-to-regexp parsing
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method !== "GET") return next();
     if (req.path.startsWith("/api/")) return next();
-    res.sendFile(path.join(staticPath, "index.html"));
+    const index = path.join(staticPath, "index.html");
+    if (fs.existsSync(index)) return res.sendFile(index);
+    return next();
   });
 }
 
