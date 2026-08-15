@@ -92,6 +92,12 @@ app.use("/api/auth/avatar", express.json({ limit: "10mb" }));
 app.use("/api/admin/ads", express.json({ limit: "20mb" }));
 app.use("/api/admin/listings", express.json({ limit: "50mb" }));
 
+// Minimal health endpoint (helps Render and sanity checks)
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.json({ status: "ok" });
+});
+
+// Mount API router
 app.use("/api", router);
 
 // Serve frontend static files if present (Vite build will be placed in dist/public)
@@ -100,7 +106,8 @@ if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
 
   // SPA fallback for non-API routes
-  app.get("*", (req, res, next) => {
+  // Use `/*` to be compatible with path-to-regexp v8 (Express 5)
+  app.get("/*", (req, res, next) => {
     if (req.path.startsWith("/api/")) return next();
     res.sendFile(path.join(staticPath, "index.html"));
   });
