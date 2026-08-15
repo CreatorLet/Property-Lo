@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+dist
+.artifacts
+.vscode
+.git
+done.zip
+.DS_Store
+npm-debug.log
+pnpm-debug.log
+.env
+.env.*
+coverage
