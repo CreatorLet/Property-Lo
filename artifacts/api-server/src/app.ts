@@ -1,12 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-console.log('CWD:', process.cwd());
-console.log('DIRNAME:', __dirname);
-try { console.log('DIST CONTENT:', fs.readdirSync(path.join(process.cwd(), 'dist'))); } catch(e){}
-import path from 'path';
-import express from 'express';
-import path from 'path';
-import express from 'express';
+import fs from "fs";
+import path from "path";
 import express, {
   type Express,
   type Request,
@@ -20,6 +13,9 @@ import pinoHttp from "pino-http";
 import router from "./routes/index.js";
 import { logger } from "./lib/logger.js";
 import { initStorage } from "./lib/supabase.js";
+
+console.log("CWD:", process.cwd());
+console.log("DIRNAME:", __dirname);
 
 const app: Express = express();
 
@@ -97,6 +93,18 @@ app.use("/api/admin/ads", express.json({ limit: "20mb" }));
 app.use("/api/admin/listings", express.json({ limit: "50mb" }));
 
 app.use("/api", router);
+
+// Serve frontend static files if present (Vite build will be placed in dist/public)
+const staticPath = path.join(process.cwd(), "dist", "public");
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+
+  // SPA fallback for non-API routes
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/")) return next();
+    res.sendFile(path.join(staticPath, "index.html"));
+  });
+}
 
 // Global error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
