@@ -1,5 +1,5 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
+import express from 'express';
 import express, {
   type Express,
   type Request,
@@ -99,18 +99,5 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 
 // Initialise Supabase Storage buckets (runs once at startup, non-blocking)
 initStorage().catch((e) => logger.warn(e, "initStorage failed"));
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve static files from the frontend build
-const frontendPath = path.join(__dirname, '../../property-lo/dist');
-app.use(express.static(frontendPath));
-
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
 
 export default app;
