@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: property-lo
+    env: docker
+    dockerfilePath: ./Dockerfile
+    branch: render-deploy
