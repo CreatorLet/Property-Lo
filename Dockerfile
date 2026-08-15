@@ -11,8 +11,9 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 # Copy the full repository so workspace package.json files are present
 COPY . .
 
-# Provide a default PORT during build for configs that read it at build time
+# Provide a default PORT and BASE_PATH during build for configs that read them at build time
 ENV PORT=10000
+ENV BASE_PATH=/
 
 # Install all workspace deps (after workspace files are present)
 RUN pnpm install --frozen-lockfile
