@@ -35,9 +35,8 @@ ENV NODE_ENV=production
 COPY --from=build /app/artifacts/api-server/dist ./dist
 COPY --from=build /app/artifacts/property-lo/dist ./dist/public
 
-# Copy backend package.json and install production deps (use npm for prod install)
-COPY artifacts/api-server/package.json ./package.json
-RUN npm install --only=production
+# Copy node_modules from build stage (pnpm's node_modules includes .pnpm with package contents)
+COPY --from=build /app/node_modules ./node_modules
 
 EXPOSE 10000
 ENV PORT=10000
