@@ -5,14 +5,14 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm
 
-# Copy lock and workspace manifests first for better cache
+# Copy workspace manifests first for better cache (lockfile + workspace config)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 
-# Install all workspace deps
-RUN pnpm install --frozen-lockfile
-
-# Copy repo
+# Copy the full repository so workspace package.json files are present
 COPY . .
+
+# Install all workspace deps (after workspace files are present)
+RUN pnpm install --frozen-lockfile
 
 # Build frontend
 WORKDIR /app/artifacts/property-lo
