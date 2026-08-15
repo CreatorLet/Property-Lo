@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-console.log('--- RUNTIME DEBUG START ---');
 console.log('CWD:', process.cwd());
 console.log('DIRNAME:', __dirname);
 try { console.log('DIST CONTENT:', fs.readdirSync(path.join(process.cwd(), 'dist'))); } catch(e){}
